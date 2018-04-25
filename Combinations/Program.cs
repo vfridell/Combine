@@ -10,11 +10,10 @@ namespace Combinations
     {
         static void Main(string[] args)
         {
-            List<int> items = new List<int> { 1, 2, 3, 4, 5 };
-            int r = 2;
+            List<int> items = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 43 };
+            int r = 8;
 
             Console.WriteLine($"{items.Count} combine {r} Should be: {NCR(items.Count, r)}");
-            
 
             List<List<int>> outputList;
             Combine(items, r, out outputList);
@@ -27,6 +26,7 @@ namespace Combinations
 
         public static void Combine<T>(List<T> items, int r, out List<List<T>> outputList)
         {
+            if (r > items.Count) throw new ArgumentException($"Cannot choose {r} items from a list of {items.Count}");
             outputList = new List<List<T>>();
             for (int i = 0; i < ((items.Count + 1) - r); i++)
             {
@@ -45,7 +45,8 @@ namespace Combinations
                 return;
             }
 
-            for (int i = parentIndex + 1; i < Math.Min(items.Count, r + depth); i++)
+            int limit = r > items.Count / 2 ? Math.Min(items.Count, r + depth) : Math.Max(items.Count, r + depth);
+            for (int i = parentIndex + 1; i < limit; i++)
             {
                 workingList.Add(items[i]);
                 Combine(workingList, items, r, depth + 1, i, outputList);
