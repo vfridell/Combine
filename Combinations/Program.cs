@@ -10,6 +10,16 @@ namespace Combinations
     {
         static void Main(string[] args)
         {
+            LinkedList<int> phases = new LinkedList<int>( new int[] { 0, 1, 2, 3, 4, });
+            List<List<int>> results = new List<List<int>>();
+            Console.WriteLine($"{phases.Count} combine {phases.Count} Should be: {NPR(phases.Count, phases.Count, false)}");
+            Permute(phases, new List<int>(), results);
+            Console.WriteLine(results.Count);
+            foreach (List<int> workingList in results)
+            {
+                Console.WriteLine(workingList.Aggregate("", (s, v) => s + $"{v},"));
+            }
+
             List<int> items = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 43 };
             int r = 8;
 
@@ -54,10 +64,50 @@ namespace Combinations
             }
         }
 
+        public static void Permute<T>(LinkedList<T> remaining, List<T> constructing, List<List<T>> result)
+        {
+            if (remaining.Count == 1)
+            {
+                constructing.Add(remaining.First.Value);
+                result.Add(constructing);
+                return;
+            }
+
+            for (int i = 0; i < remaining.Count; i++)
+            {
+                LinkedList<T> subLinkedList = new LinkedList<T>(remaining);
+                int moves = 0;
+                var enumerator = subLinkedList.GetEnumerator();
+                enumerator.MoveNext();
+                while (moves < i)
+                {
+                    enumerator.MoveNext();
+                    moves++;
+                }
+                subLinkedList.Remove(enumerator.Current);
+                List<T> subConstructing = new List<T>(constructing);
+                subConstructing.Add(enumerator.Current);
+                Permute(subLinkedList, subConstructing, result);
+            }
+        }
+
         public static int NCR(int n, int k)
         {
             if (k > n) return 0;
             return Factorial(n, n - k + 1) / Factorial(k);
+        }
+
+        public static int NPR(int n, int k, bool repeat)
+        {
+            if (k > n) return 0;
+            if(repeat)
+            {
+                return (int)Math.Pow(n, k);
+            }
+            else
+            {
+                return Factorial(n) / Factorial(n - k);
+            }
         }
 
         public static int Factorial(int num, int lowerlimit = 1)
